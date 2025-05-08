@@ -26,6 +26,11 @@ public class GazeReader : MonoBehaviour
             {
                 hitGameObject.GetComponent<GazeFocus>().FocusWithGaze();
             }
+            else if(objectLayerNumber == 8)
+            {
+                Debug.Log($"COLOR BUTTON..");
+                hitGameObject.GetComponent<ColorButton>().HoverToButton();
+            }
         }
     }
 }
