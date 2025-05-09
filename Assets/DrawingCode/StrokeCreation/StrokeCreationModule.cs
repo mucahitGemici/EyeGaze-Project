@@ -25,6 +25,10 @@ public class StrokeCreationModule : MonoBehaviour
     //test
     private int rings = 0;
 
+
+    // mucahit color palette
+    [SerializeField] private ColorManager colorManager;
+
     void Start()
     {
         _startPosition = Vector3.zero;
@@ -45,7 +49,7 @@ public class StrokeCreationModule : MonoBehaviour
         Debug.Log($"_currentStrokeVertex: {_currentStrokeVertex}");
         _startPosition = startPosition;
 
-        NewStrokeGameobject("n" + _currentStroke.id, _currentStroke.ribbonWidth, _currentStroke.ringVertex,  _currentStroke.ribbonColor);
+        NewStrokeGameobject("n" + _currentStroke.id, _currentStroke.ribbonWidth, _currentStroke.ringVertex,  _currentStroke.ribbonColor, colorManager.GetSelectedMaterial);
 
         _newStroke = true;
     }
@@ -151,14 +155,14 @@ public class StrokeCreationModule : MonoBehaviour
     #region strokeCreation
 
     //new gameobject to keep new mesh
-    private void NewStrokeGameobject(string strokeName, float ribbonWidth, int ringVertex, Color ribbonColor)
+    private void NewStrokeGameobject(string strokeName, float ribbonWidth, int ringVertex, Color ribbonColor, Material _selectedMaterial)
     {
 
         GameObject strokeGameobject = Instantiate(Resources.Load("Stroke"), new Vector3(0, 0, 0), Quaternion.identity) as GameObject;
         strokeGameobject.name = strokeName;
 
         //strokeGameobject.GetComponent<PlanarMeshCreation>().NewMesh(strokeName, ribbonWidth, ribbonColor);
-        strokeGameobject.GetComponent<CylinderMeshCreation>().NewMesh(strokeName, ribbonWidth, ringVertex, ribbonColor);
+        strokeGameobject.GetComponent<CylinderMeshCreation>().NewMesh(strokeName, ribbonWidth, ringVertex, ribbonColor, _selectedMaterial);
 
         strokeGameobject.transform.SetParent(GameObject.Find("StrokeContainer").transform);
 

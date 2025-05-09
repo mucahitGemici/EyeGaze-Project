@@ -31,7 +31,7 @@ public class CylinderMeshCreation : MonoBehaviour {
     //!!TODO!!
     //missing normals
     
-    public void NewMesh(string name, float size, int ringCount, Color color)
+    public void NewMesh(string name, float size, int ringCount, Color color, Material selectedMaterial)
     {
         _meshName = name;
         _meshWidth = size;
@@ -41,12 +41,12 @@ public class CylinderMeshCreation : MonoBehaviour {
         _lastRingFirstIndex = 3;
 
         //_meshMaterial = new Material(_meshShader);
-        _meshMaterial.SetColor("_Color", color);
+        //_meshMaterial.SetColor("_Color", color);
 
         _mesh = new Mesh();
         _mesh.name = _meshName;
         GetComponent<MeshFilter>().mesh = _mesh;
-        GetComponent<MeshRenderer>().material = _meshMaterial;
+        GetComponent<MeshRenderer>().material = selectedMaterial; // change this material to change the color for that stroke
 
         _currentStage = 1;
         _lastPosition = Vector3.zero;

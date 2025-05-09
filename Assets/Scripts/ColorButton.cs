@@ -1,39 +1,44 @@
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 public class ColorButton : MonoBehaviour
 {
     public Image outlineImage;
+    [SerializeField] private ColorManager colorManager;
 
     // this is gonna be activated with raycasting (left controller raycast)
-    [SerializeField] public bool isHovering;
+    [HideInInspector] public bool isHovering;
+    [HideInInspector] public bool wantsHovering;
 
-    enum ButtonColor
+
+    private bool isSelected;
+    
+
+    [SerializeField] public ColorManager.ColorEnum buttonColor;
+
+    [HideInInspector] public float counter;
+
+    private float normalScale;
+    private float hoverScale;
+    private float pressedScale;
+
+    private void Awake()
     {
-        Black,
-        Red
+        normalScale = transform.localScale.x;
+        hoverScale = normalScale + 0.2f;
+        pressedScale = normalScale - 0.2f;
     }
-
-    [SerializeField] private ButtonColor buttonColor;
-
-    private float counter;
 
     private void Update()
     {
-        if (isHovering && counter > 0f)
-        {
-            outlineImage.color = Color.green;
-        }
-        else
-        {
-            outlineImage.color = Color.white;
-        }
-
-        counter -= Time.deltaTime;
+        if(counter > 0) counter -= Time.deltaTime;
         if(counter <= 0 && isHovering == true)
         {
-            outlineImage.color = Color.white;
+            HoverAnimationEnd();
             isHovering = false;
         }
+
 
         bool buttonIsPressing = OVRInput.Get(OVRInput.Button.One, OVRInput.Controller.RHand);
         if (buttonIsPressing && isHovering)
@@ -44,20 +49,51 @@ public class ColorButton : MonoBehaviour
 
     public void HoverToButton()
     {
-        counter = 0.1f;
-        isHovering = true;
+        if(isSelected == false)
+        {
+        colorManager.HoverColorButton(this);
+        }
     }
     private void SelectColor()
     {
-        Material mat = Resources.Load($"Materials/rightBrush") as Material;
-        switch (buttonColor)
+        colorManager.AssignColor(this);
+    }
+
+    public void HoverAnimationStart()
+    {
+        if(isSelected == false)
         {
-            case ButtonColor.Black:
-                mat.color = Color.black;
-                break;
-            case ButtonColor.Red:
-                mat.color = Color.red;
-                break;
+            transform.DOScale(hoverScale, 0.5f);
+            isHovering = true;
+            counter = 0.25f;
+        }
+    }
+
+    private void HoverAnimationEnd()
+    {
+        if(isSelected == false)
+        {
+            transform.DOScale(normalScale, 0.5f);
+        }
+    }
+
+    public void SelectedAnimation()
+    {
+        if(isSelected == false)
+        {
+            transform.DOScale(pressedScale, 0.5f);
+            isSelected = true;
+            outlineImage.color = colorManager.SelectedOutlineColor;
+        }
+    }
+
+    public void NotSelect()
+    {
+        if(isSelected == true)
+        {
+            isSelected = false;
+            transform.DOScale(normalScale, 0.5f);
+            outlineImage.color = Color.white;
         }
     }
 }

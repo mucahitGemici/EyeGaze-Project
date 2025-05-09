@@ -24,6 +24,14 @@ public class DrawingCanvas : MonoBehaviour
     private StrokeCreationModule strokeCreation;
     private ExperimentControl experimentControl;
 
+    [HideInInspector] public float strokeWidthValueMultiplier;
+    [SerializeField] private TMPro.TMP_Text widthText;
+    public void SetStrokeWidth(float val)
+    {
+        strokeWidthValueMultiplier = val;
+        widthText.text = $"{strokeWidthValueMultiplier.ToString("#.00")}";
+    }
+
     #region initi
 
     public void Awake()
@@ -39,6 +47,8 @@ public class DrawingCanvas : MonoBehaviour
     void Start()
     {
         InitiateGlobalVariables();
+
+        SetStrokeWidth(1.00f);
 
         allStrokes = new Dictionary<int, Stroke>();
         strokeCount = 0;
@@ -90,7 +100,7 @@ public class DrawingCanvas : MonoBehaviour
             strokeCount++;
         }
 
-        allStrokes.Add(strokeCount, new Stroke(strokeCount, GlobalVars.Instance.currentStrokeSize, GlobalVars.Instance.currentStrokeColor));
+        allStrokes.Add(strokeCount, new Stroke(strokeCount, GlobalVars.Instance.currentStrokeSize * strokeWidthValueMultiplier, GlobalVars.Instance.currentStrokeColor));
         strokeCreation.StartDrawing(allStrokes[strokeCount], e.brush.position);
 
         currentStrokeName = strokeCount;
