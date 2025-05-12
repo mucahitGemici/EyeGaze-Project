@@ -146,7 +146,7 @@ public class XMLWriter : MonoBehaviour {
         Debug.Log($"NAME: {strokeName}");
         //////
 
-        string pathInsideAssets = $"Assets/LOGs/study/{e.participantName}";
+        string pathInsideAssets = $"Assets/Resources/LOGs/study/{e.participantName}";
 
         if (!Directory.Exists($"{pathInsideAssets}/Prefabs"))
         {
@@ -186,9 +186,12 @@ public class XMLWriter : MonoBehaviour {
 
         // mucahit
         // prefab name
-        strokeName = "m_gameObject_" + e.participantName.ToString() + "_" + e.experimentVariables[0] + "_" + e.experimentVariables[1]
+        /*
+        strokeName = "stroke_participantID_" + e.participantName.ToString() + "_" + e.experimentVariables[0] + "_" + e.experimentVariables[1]
             + "_" + e.experimentVariables[2] + "_" + e.experimentVariables[3]
-            + "_" + e.meshName;
+            + "_" + e.meshName;*/
+
+        strokeName = "stroke_participantID_" + e.participantName.ToString() + "_" + e.meshName;
 
         string nameLocalPath = pathInsideAssets + $"/Prefabs/" + strokeName + ".prefab";
         //////////////////////
