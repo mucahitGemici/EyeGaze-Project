@@ -138,22 +138,38 @@ public class XMLWriter : MonoBehaviour {
 
     private void SaveStroke(SaveStrokeEvent e)
     {
+        // mucahit (asset name: strokeName)
         string strokeName = "stroke_"  + e.participantName.ToString() + "_" + e.experimentVariables[0] + "_" + e.experimentVariables[1]
             + "_" + e.experimentVariables[2] + "_" + e.experimentVariables[3]
             + "_" + e.meshName;
 
-        // mucahit (asset name: strokeName)
         Debug.Log($"NAME: {strokeName}");
-        
-        string pathInsideAssets = "Assets/LOGs/study/" + e.participantName.ToString();
+        //////
 
-        if (!Directory.Exists(pathInsideAssets))
+        string pathInsideAssets = $"Assets/LOGs/study/{e.participantName}";
+
+        if (!Directory.Exists($"{pathInsideAssets}/Prefabs"))
         {
-            Directory.CreateDirectory(pathInsideAssets);
+            Directory.CreateDirectory($"{pathInsideAssets}/Prefabs");
         }
 
-        string path = EditorUtility.SaveFilePanel("Save Separate Mesh Asset", pathInsideAssets, strokeName, "asset");
-        path = FileUtil.GetProjectRelativePath(path);
+        if (!Directory.Exists($"{pathInsideAssets}/Assets"))
+        {
+            Directory.CreateDirectory($"{pathInsideAssets}/Assets");
+        }
+        /*
+        if (!Directory.Exists(pathInsideAssets))
+        {
+            Directory.CreateDirectory(pathInsideAssets + $"{e.participantName}/Prefabs");
+            Directory.CreateDirectory(pathInsideAssets + $"{e.participantName}/Assets");
+        }
+        */
+
+        //string path = EditorUtility.SaveFilePanel("Save Separate Mesh Asset", pathInsideAssets, strokeName, "asset");
+        string path = pathInsideAssets + $"/Assets/" + strokeName + ".asset";
+        Debug.Log($"path prev:{path}");
+        //path = FileUtil.GetProjectRelativePath(path);
+        //Debug.Log($"path after relative path:{path}");
 
         MeshUtility.Optimize(e.mesh);
 
@@ -174,7 +190,8 @@ public class XMLWriter : MonoBehaviour {
             + "_" + e.experimentVariables[2] + "_" + e.experimentVariables[3]
             + "_" + e.meshName;
 
-        string nameLocalPath = pathInsideAssets + "/" + strokeName + ".prefab";
+        string nameLocalPath = pathInsideAssets + $"/Prefabs/" + strokeName + ".prefab";
+        //////////////////////
 
         UnityEngine.Object prefab = PrefabUtility.CreateEmptyPrefab(nameLocalPath);
         PrefabUtility.ReplacePrefab(GameObject.Find(e.meshName), prefab, ReplacePrefabOptions.ConnectToPrefab);

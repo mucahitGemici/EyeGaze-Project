@@ -24,11 +24,13 @@ public class ExperimentControl : MonoBehaviour {
     private GameObject ControllerRight;
     private GameObject ControllerLeft;
 
+    [SerializeField] private int participantID;
+
     private void Start()
     {
         //for test, remove in study
         #region test     
-        GlobalVars.Instance.currentParticipant = "0000";
+        GlobalVars.Instance.currentParticipant = $"{participantID}";
         GlobalVars.Instance.thisExperiment = GlobalVars.ExperimentPhase.seeModel;
 
         GlobalVars.Instance.thisObjectShape = GlobalVars.ObjectShape.circle;

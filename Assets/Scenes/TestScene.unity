@@ -916,6 +916,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b7f9fc7f58686f8449a5c1e8270289f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  participantID: 2
 --- !u!114 &126711843
 MonoBehaviour:
   m_ObjectHideFlags: 0
