@@ -46,7 +46,11 @@ public class CylinderMeshCreation : MonoBehaviour {
         _mesh = new Mesh();
         _mesh.name = _meshName;
         GetComponent<MeshFilter>().mesh = _mesh;
+        MeshCollider mCollider = GetComponent<MeshCollider>();
+        mCollider.sharedMesh = _mesh;
         GetComponent<MeshRenderer>().material = selectedMaterial; // change this material to change the color for that stroke
+
+
 
         _currentStage = 1;
         _lastPosition = Vector3.zero;
@@ -72,7 +76,12 @@ public class CylinderMeshCreation : MonoBehaviour {
     {
         _currentStage = newStage;
 
-        AddMeshFilter(CreateQuads(_lastPosition, finalVertex, directionPose, _currentStage));        
+        AddMeshFilter(CreateQuads(_lastPosition, finalVertex, directionPose, _currentStage));
+        MeshCollider mCollider = GetComponent<MeshCollider>();
+        mCollider.enabled = true;
+        // not make it convex. if you make it convex, you can not select strokes that are behind of circular strokes (the one at the front prevents selection)
+        //mCollider.convex = true;
+
     }
 
     #region mesh methods

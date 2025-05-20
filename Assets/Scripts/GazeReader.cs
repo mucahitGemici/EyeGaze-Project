@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 
 public class GazeReader : MonoBehaviour
@@ -8,6 +9,31 @@ public class GazeReader : MonoBehaviour
 
     [SerializeField] private LineRenderer lineRenderer;
 
+    [SerializeField] private Manipulator manipulator;
+
+    [SerializeField] private StrokeManipulation strokeManipulation;
+
+
+    private float strokeApprovalCounter;
+    [SerializeField] private DrawController drawController;
+    private bool isSelecting;
+
+    public enum InteractionState
+    {
+        Drawing,
+        Selecting,
+        Editing
+    }
+    private InteractionState interactionState;
+    public InteractionState GetInteractionState
+    {
+        get { return interactionState; }
+    }
+    [SerializeField] private TMP_Text stateText;
+    private void Start()
+    {
+        ChangeState(InteractionState.Drawing);
+    }
     private void Update()
     {
         Vector3 eyePositionAverage = (leftEye.position + rightEye.position) / 2f;
@@ -31,6 +57,71 @@ public class GazeReader : MonoBehaviour
                 //Debug.Log($"COLOR BUTTON..");
                 hitGameObject.GetComponent<ColorButton>().HoverToButton();
             }
+            else if(objectLayerNumber == 9 && isSelecting)
+            {
+                // this is a stroke, add this in potential stroke selection list
+                strokeManipulation.AddToPotentialStokeList(hitGameObject.transform);
+            }
+            
+        }
+
+
+        // selecting strokes
+        if(strokeApprovalCounter > 0) strokeApprovalCounter -= Time.deltaTime;
+        if (OVRInput.Get(OVRInput.Button.Two, OVRInput.Controller.RTouch) && strokeApprovalCounter <= 0f && interactionState == InteractionState.Selecting)
+        {
+            Debug.Log("button two pressed");
+            strokeManipulation.ApproveStrokeSelections();
+            strokeApprovalCounter = 1f;
+        }
+
+        // ending stroke manipulation
+        if(OVRInput.Get(OVRInput.Axis1D.SecondaryHandTrigger, OVRInput.Controller.Touch) > 0.1f && (interactionState == InteractionState.Selecting || interactionState == InteractionState.Editing))
+        {
+            Debug.Log("secondary hand trigger pressed");
+            strokeManipulation.EndStrokeManipulation();
+            //drawController.IsManipulating = false;
+            ChangeState(InteractionState.Drawing);
+        }
+
+        //
+        if(interactionState == InteractionState.Drawing && OVRInput.Get(OVRInput.Button.One, OVRInput.Controller.Touch))
+        {
+            ChangeState(InteractionState.Selecting);
+        }
+
+        if(interactionState == InteractionState.Selecting)
+        {
+            if(OVRInput.Get(OVRInput.Button.One, OVRInput.Controller.Touch))
+            {
+                isSelecting = true;
+            }
+            else
+            {
+                isSelecting = false;
+            }
+        }
+
+
+    }
+
+    public void ChangeState(InteractionState newState)
+    {
+        interactionState = newState;
+        switch (interactionState)
+        {
+            case InteractionState.Drawing:
+                stateText.text = "Drawing";
+                manipulator.gameObject.SetActive(false);
+                break;
+            case InteractionState.Selecting:
+                stateText.text = "Selecting";
+                manipulator.gameObject.SetActive(false);
+                break;
+            case InteractionState.Editing:
+                stateText.text = "Editing";
+                manipulator.gameObject.SetActive(true);
+                break;
         }
     }
 }

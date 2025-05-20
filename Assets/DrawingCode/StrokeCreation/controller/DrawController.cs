@@ -29,6 +29,9 @@ public class DrawController : MonoBehaviour
     }
 
 
+    [SerializeField] private GazeReader _gazeReader;
+
+
     public void Start()
     {
         //get info for drawing
@@ -49,7 +52,11 @@ public class DrawController : MonoBehaviour
         EventManager.Instance.QueueEvent(new OnDrawingEvent(brush.transform));
 
         //check if trigger pressed
-        triggerButtonState = OVRInput.Get(OVRInput.Axis1D.SecondaryIndexTrigger, OVRInput.Controller.Touch) > 0.1; 
+        triggerButtonState = OVRInput.Get(OVRInput.Axis1D.SecondaryIndexTrigger, OVRInput.Controller.Touch) > 0.1;
+        if (_gazeReader.GetInteractionState != GazeReader.InteractionState.Drawing)
+        {
+            triggerButtonState = false;
+        }
         //Debug.Log(tempState.ToString() + " " + lastButtonState);
 
         //if state of the button changed since last frame

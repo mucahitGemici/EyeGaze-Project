@@ -21,6 +21,7 @@ public class Brush : MonoBehaviour
         set { _state = value; }
     }
 
+    [SerializeField] private Manipulator _manipulator;
     private void Start()
     {
         _meshRenderer = _targetController.GetComponent<MeshRenderer>();
@@ -37,5 +38,24 @@ public class Brush : MonoBehaviour
         {
             _meshRenderer.material = _usingMaterial;
         }
+
     }
+    private void OnTriggerEnter(Collider other)
+    {
+        if(other.gameObject.layer == 10)
+        {
+            _manipulator.IsHoveringHolder = true;
+        }
+       
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if(other.gameObject.layer == 10)
+        {
+            _manipulator.IsHoveringHolder = false;
+        }
+    }
+
+
 }
