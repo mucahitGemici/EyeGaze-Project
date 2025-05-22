@@ -55,6 +55,8 @@ public class ColorManager : MonoBehaviour
                 break;
             }
         }
+
+        transform.parent.gameObject.SetActive(false);
     }
     public void AssignColor(ColorButton _colorButton)
     {

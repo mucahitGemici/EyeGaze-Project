@@ -8,13 +8,16 @@ public class StrokeManipulation : MonoBehaviour
 
     [SerializeField] private DrawController drawController;
     [SerializeField] private GazeReader gazeReader;
+    [SerializeField] private Manipulator manipulator;
 
-   
+    private bool canManipulate = false;
     private void ClearSelectedStrokes()
     {
         foreach (Transform t in selectedStrokes)
         {
-            t.GetComponent<MeshRenderer>().material.color = Color.black;
+            Color matColor = t.GetComponent<MeshRenderer>().material.color;
+            matColor.a = 1f; // become opaque when selected strokes resetted
+            t.GetComponent<MeshRenderer>().material.color = matColor;
         }
         selectedStrokes.Clear();
     }
@@ -23,7 +26,9 @@ public class StrokeManipulation : MonoBehaviour
     {
         foreach(Transform t in potentialStrokeSelectionList)
         {
-            t.GetComponent<MeshRenderer>().material.color = Color.black;
+            Color matColor = t.GetComponent<MeshRenderer>().material.color;
+            matColor.a = 1f; // become opaque when potential strokes resetted
+            t.GetComponent<MeshRenderer>().material.color = matColor;
         }
         potentialStrokeSelectionList.Clear();
     }
@@ -33,7 +38,9 @@ public class StrokeManipulation : MonoBehaviour
         foreach (Transform t in potentialStrokeSelectionList)
         {
             selectedStrokes.Add(t);
-            t.GetComponent<MeshRenderer>().material.color = Color.white;
+            Color matColor = t.GetComponent<MeshRenderer>().material.color;
+            matColor.a = 1f; // become opaque after approving selection
+            t.GetComponent<MeshRenderer>().material.color = matColor;
         }
         potentialStrokeSelectionList.Clear();
     }
@@ -42,7 +49,10 @@ public class StrokeManipulation : MonoBehaviour
         ClearSelectedStrokes();
         if(potentialStrokeSelectionList.Contains(_stroke) == false)
         {
-            _stroke.GetComponent<MeshRenderer>().material.color = Color.gray;
+            //_stroke.GetComponent<MeshRenderer>().material.color = Color.gray;
+            Color matColor = _stroke.GetComponent<MeshRenderer>().material.color;
+            matColor.a = 0.25f; // become transparent if it is in the potential stoke list
+            _stroke.GetComponent<MeshRenderer>().material.color = matColor;
             potentialStrokeSelectionList.Add(_stroke);
         }
     }
@@ -54,6 +64,8 @@ public class StrokeManipulation : MonoBehaviour
         AssignSelectedStrokes();
 
         gazeReader.ChangeState(GazeReader.InteractionState.Editing);
+        
+        ManipulateSelectedStrokes();
     }
 
 
@@ -61,5 +73,28 @@ public class StrokeManipulation : MonoBehaviour
     {
         ClearSelectedStrokes();
         ClearPotentialStrokes();
+        
+        StopManipulation();
+    }
+
+    private void ManipulateSelectedStrokes()
+    {
+        canManipulate = true;
+    }
+
+    private void StopManipulation()
+    {
+        canManipulate = false;
+    }
+
+    private void Update()
+    {
+        if(canManipulate == true && selectedStrokes.Count > 0)
+        {
+            foreach(Transform t in selectedStrokes)
+            {
+                t.position = t.position + manipulator.GetMovementDirection * manipulator.GetMovementScale * Time.deltaTime;
+            }
+        }
     }
 }

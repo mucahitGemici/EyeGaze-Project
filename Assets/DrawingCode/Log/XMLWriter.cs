@@ -138,6 +138,7 @@ public class XMLWriter : MonoBehaviour {
 
     private void SaveStroke(SaveStrokeEvent e)
     {
+        
         // mucahit (asset name: strokeName)
         string strokeName = "stroke_"  + e.participantName.ToString() + "_" + e.experimentVariables[0] + "_" + e.experimentVariables[1]
             + "_" + e.experimentVariables[2] + "_" + e.experimentVariables[3]
@@ -194,10 +195,18 @@ public class XMLWriter : MonoBehaviour {
         strokeName = "stroke_participantID_" + e.participantName.ToString() + "_" + e.meshName;
 
         string nameLocalPath = pathInsideAssets + $"/Prefabs/" + strokeName + ".prefab";
+        string nameLocalPathV2 = pathInsideAssets + $"/Prefabs/" + strokeName + "V2.prefab";
         //////////////////////
 
-        UnityEngine.Object prefab = PrefabUtility.CreateEmptyPrefab(nameLocalPath);
-        PrefabUtility.ReplacePrefab(GameObject.Find(e.meshName), prefab, ReplacePrefabOptions.ConnectToPrefab);
+        //UnityEngine.Object prefab = PrefabUtility.CreateEmptyPrefab(nameLocalPath);
+        
+        GameObject _prefab = GameObject.Find(e.meshName);
+        MeshRenderer _meshRenderer = _prefab.GetComponent<MeshRenderer>();
+        _meshRenderer.material = _prefab.GetComponent<CylinderMeshCreation>()._meshMaterial;
+        //Debug.Log($"Name: {_prefab.name}, Material: {_prefab.GetComponent<MeshRenderer>().material}");
+        
+        PrefabUtility.SaveAsPrefabAssetAndConnect(_prefab, nameLocalPathV2, InteractionMode.AutomatedAction);
+        //PrefabUtility.ReplacePrefab(GameObject.Find(e.meshName), prefab, ReplacePrefabOptions.ConnectToPrefab);
 
         //Debug.Log(string.Format("Saved Mesh: {0}", strokeName));
     }

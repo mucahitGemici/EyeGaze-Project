@@ -187,8 +187,9 @@ public class SaveStrokeEvent : AppEvent
 
     public string meshName;
     public Mesh mesh;
+    public Material material;
 
-    public SaveStrokeEvent(string _participantName, string[] _experimentVariables, string _meshName, Mesh _mesh)
+    public SaveStrokeEvent(string _participantName, string[] _experimentVariables, string _meshName, Mesh _mesh, Material _material)
     {
         participantName = _participantName;
 
@@ -200,6 +201,7 @@ public class SaveStrokeEvent : AppEvent
 
         meshName = _meshName;
         mesh = _mesh;
+        material = _material;
     }
 }
 

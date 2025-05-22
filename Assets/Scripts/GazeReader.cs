@@ -13,6 +13,10 @@ public class GazeReader : MonoBehaviour
 
     [SerializeField] private StrokeManipulation strokeManipulation;
 
+    private float colorPaletteCounter;
+    [SerializeField] private ColorPaletteActivation colorPaletteActivation;
+    private float colorPaletteCooldown = -1f;
+
 
     private float strokeApprovalCounter;
     [SerializeField] private DrawController drawController;
@@ -85,7 +89,7 @@ public class GazeReader : MonoBehaviour
         }
 
         //
-        if(interactionState == InteractionState.Drawing && OVRInput.Get(OVRInput.Button.One, OVRInput.Controller.Touch))
+        if(interactionState == InteractionState.Drawing && OVRInput.Get(OVRInput.Button.One, OVRInput.Controller.Touch) && colorPaletteActivation.ColorPaletteActivated == false)
         {
             ChangeState(InteractionState.Selecting);
         }
@@ -102,6 +106,27 @@ public class GazeReader : MonoBehaviour
             }
         }
 
+        
+        if(interactionState == InteractionState.Drawing && OVRInput.Get(OVRInput.Button.Two, OVRInput.Controller.RTouch))
+        {
+            colorPaletteCounter += Time.deltaTime;
+            Debug.Log($"count for palette... (counter: {colorPaletteCounter})");
+            colorPaletteActivation.Counter = colorPaletteCounter;
+            if(colorPaletteCounter >= 1f)
+            {
+                Debug.Log($"color palette counte reached to 1!!! Change states");
+                colorPaletteCounter = -colorPaletteCooldown;
+            }
+        }
+        else if(interactionState == InteractionState.Drawing && OVRInput.GetUp(OVRInput.Button.Two, OVRInput.Controller.RTouch))
+        {
+            Debug.Log($"reset state for color palette!!! user released the button! (last counter val: {colorPaletteCounter})");
+            colorPaletteCounter = colorPaletteCooldown;
+            colorPaletteActivation.Counter = colorPaletteCounter;
+            colorPaletteActivation.ResetState();
+        }
+        
+
 
     }
 
@@ -111,15 +136,17 @@ public class GazeReader : MonoBehaviour
         switch (interactionState)
         {
             case InteractionState.Drawing:
-                stateText.text = "Drawing";
+                stateText.text = $"State: Drawing";
                 manipulator.gameObject.SetActive(false);
                 break;
             case InteractionState.Selecting:
-                stateText.text = "Selecting";
+                stateText.text = $"State: Selecting";
                 manipulator.gameObject.SetActive(false);
                 break;
             case InteractionState.Editing:
-                stateText.text = "Editing";
+                stateText.text = $"State: Editing";
+                Vector3 manipulatorDirection = Camera.main.transform.forward * 0.5f - Camera.main.transform.up * 0.25f + Camera.main.transform.right * 0.25f;
+                manipulator.transform.position = Camera.main.transform.position + manipulatorDirection;
                 manipulator.gameObject.SetActive(true);
                 break;
         }

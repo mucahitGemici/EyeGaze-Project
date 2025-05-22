@@ -99,10 +99,11 @@ public class ExperimentControl : MonoBehaviour {
             {
                 MeshFilter mf = child.GetComponent<MeshFilter>() as MeshFilter;
                 Mesh mesh = mf.sharedMesh;
+                Material material = child.GetComponent<MeshRenderer>().material;
 
                 EventManager.Instance.TriggerEvent(new SaveStrokeEvent(GlobalVars.Instance.currentParticipant,
                    new string[] { GlobalVars.Instance.thisObjectShape.ToString(), GlobalVars.Instance.thisVisualGuide.ToString(), GlobalVars.Instance.thisDrawnDirection.ToString(), GlobalVars.Instance.thisDrawnSize.ToString() },
-                   child.name, mesh));
+                   child.name, mesh, material));
             }
             
             #endregion

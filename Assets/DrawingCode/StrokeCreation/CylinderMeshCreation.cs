@@ -45,6 +45,8 @@ public class CylinderMeshCreation : MonoBehaviour {
 
         _mesh = new Mesh();
         _mesh.name = _meshName;
+        _meshMaterial = selectedMaterial;
+
         GetComponent<MeshFilter>().mesh = _mesh;
         MeshCollider mCollider = GetComponent<MeshCollider>();
         mCollider.sharedMesh = _mesh;
