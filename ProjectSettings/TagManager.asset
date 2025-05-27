@@ -19,8 +19,8 @@ TagManager:
   - Stroke
   - ManipulatorHolder
   - ManipulationBorder
-  - 
-  - 
+  - ManipulationBorder-for-Scale
+  - ManipulatorHolder-for-Scale
   - 
   - 
   - 

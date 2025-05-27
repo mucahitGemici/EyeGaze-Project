@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class Manipulator : MonoBehaviour
+public class PositionManipulator : MonoBehaviour
 {
     [SerializeField] private Transform holder;
 

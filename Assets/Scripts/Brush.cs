@@ -21,7 +21,8 @@ public class Brush : MonoBehaviour
         set { _state = value; }
     }
 
-    [SerializeField] private Manipulator _manipulator;
+    [SerializeField] private PositionManipulator _positionManipulator;
+    [SerializeField] private ScaleManipulator _scaleManipulator;
     private void Start()
     {
         _meshRenderer = _targetController.GetComponent<MeshRenderer>();
@@ -44,7 +45,11 @@ public class Brush : MonoBehaviour
     {
         if(other.gameObject.layer == 10)
         {
-            _manipulator.IsHoveringHolder = true;
+            _positionManipulator.IsHoveringHolder = true;
+        }
+        else if(other.gameObject.layer == 13)
+        {
+            _scaleManipulator.IsHoveringHolder = true;
         }
        
     }
@@ -53,7 +58,11 @@ public class Brush : MonoBehaviour
     {
         if(other.gameObject.layer == 10)
         {
-            _manipulator.IsHoveringHolder = false;
+            _positionManipulator.IsHoveringHolder = false;
+        }
+        else if(other.gameObject.layer == 13)
+        {
+            _scaleManipulator.IsHoveringHolder = false;
         }
     }
 

@@ -158,13 +158,13 @@ public class XMLWriter : MonoBehaviour {
         {
             Directory.CreateDirectory($"{pathInsideAssets}/Assets");
         }
-        /*
+        
         if (!Directory.Exists(pathInsideAssets))
         {
             Directory.CreateDirectory(pathInsideAssets + $"{e.participantName}/Prefabs");
             Directory.CreateDirectory(pathInsideAssets + $"{e.participantName}/Assets");
         }
-        */
+        
 
         //string path = EditorUtility.SaveFilePanel("Save Separate Mesh Asset", pathInsideAssets, strokeName, "asset");
         string path = pathInsideAssets + $"/Assets/" + strokeName + ".asset";
@@ -174,7 +174,7 @@ public class XMLWriter : MonoBehaviour {
 
         MeshUtility.Optimize(e.mesh);
 
-
+        
         try
         {
             AssetDatabase.CreateAsset(e.mesh, path);
@@ -184,6 +184,7 @@ public class XMLWriter : MonoBehaviour {
         {
             Debug.Log(eX.ToString());
         }
+        
 
         // mucahit
         // prefab name
@@ -200,9 +201,14 @@ public class XMLWriter : MonoBehaviour {
 
         //UnityEngine.Object prefab = PrefabUtility.CreateEmptyPrefab(nameLocalPath);
         
+        Debug.Log($"meshName: {e.meshName}");
         GameObject _prefab = GameObject.Find(e.meshName);
         MeshRenderer _meshRenderer = _prefab.GetComponent<MeshRenderer>();
-        _meshRenderer.material = _prefab.GetComponent<CylinderMeshCreation>()._meshMaterial;
+        CylinderMeshCreation _cylinderMeshCreation = _prefab.GetComponent<CylinderMeshCreation>();
+        _meshRenderer.material = _cylinderMeshCreation._meshMaterial;
+        //MeshFilter _meshFilter = _prefab.GetComponent<MeshFilter>();
+        Debug.Log($"meshBackup: {_cylinderMeshCreation._meshBackup.name}");
+        _prefab.GetComponent<MeshFilter>().mesh = _cylinderMeshCreation._meshBackup;
         //Debug.Log($"Name: {_prefab.name}, Material: {_prefab.GetComponent<MeshRenderer>().material}");
         
         PrefabUtility.SaveAsPrefabAssetAndConnect(_prefab, nameLocalPathV2, InteractionMode.AutomatedAction);

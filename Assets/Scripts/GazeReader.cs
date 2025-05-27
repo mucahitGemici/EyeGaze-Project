@@ -9,7 +9,8 @@ public class GazeReader : MonoBehaviour
 
     [SerializeField] private LineRenderer lineRenderer;
 
-    [SerializeField] private Manipulator manipulator;
+    [SerializeField] private PositionManipulator positionManipulator;
+    [SerializeField] private ScaleManipulator scaleManipulator;
 
     [SerializeField] private StrokeManipulation strokeManipulation;
 
@@ -137,17 +138,21 @@ public class GazeReader : MonoBehaviour
         {
             case InteractionState.Drawing:
                 stateText.text = $"State: Drawing";
-                manipulator.gameObject.SetActive(false);
+                positionManipulator.gameObject.SetActive(false);
+                scaleManipulator.gameObject.SetActive(false);
                 break;
             case InteractionState.Selecting:
                 stateText.text = $"State: Selecting";
-                manipulator.gameObject.SetActive(false);
+                positionManipulator.gameObject.SetActive(false);
+                scaleManipulator .gameObject.SetActive(false);
                 break;
             case InteractionState.Editing:
                 stateText.text = $"State: Editing";
                 Vector3 manipulatorDirection = Camera.main.transform.forward * 0.5f - Camera.main.transform.up * 0.25f + Camera.main.transform.right * 0.25f;
-                manipulator.transform.position = Camera.main.transform.position + manipulatorDirection;
-                manipulator.gameObject.SetActive(true);
+                positionManipulator.transform.position = Camera.main.transform.position + manipulatorDirection;
+                scaleManipulator.transform.position = positionManipulator.transform.position - positionManipulator.transform.right * 0.3f;
+                positionManipulator.gameObject.SetActive(true);
+                scaleManipulator.gameObject.SetActive(true);
                 break;
         }
     }

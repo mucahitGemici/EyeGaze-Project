@@ -22,6 +22,7 @@ public class CylinderMeshCreation : MonoBehaviour {
     
     //public Shader _meshShader;
     public Material _meshMaterial;
+    public Mesh _meshBackup;
 
     private Mesh _mesh;
    
@@ -47,7 +48,9 @@ public class CylinderMeshCreation : MonoBehaviour {
         _mesh.name = _meshName;
         _meshMaterial = selectedMaterial;
 
+
         GetComponent<MeshFilter>().mesh = _mesh;
+        _meshBackup = _mesh;
         MeshCollider mCollider = GetComponent<MeshCollider>();
         mCollider.sharedMesh = _mesh;
         GetComponent<MeshRenderer>().material = selectedMaterial; // change this material to change the color for that stroke
