@@ -13,6 +13,7 @@ public class StrokeManipulation : MonoBehaviour
     [SerializeField] private GazeReader gazeReader;
     [SerializeField] private PositionManipulator positionManipulator;
     [SerializeField] private ScaleManipulator scaleManipulator;
+    [SerializeField] private RotationManipulator rotationManipulator;
 
     [SerializeField] private Transform strokeHolder;
 
@@ -146,6 +147,7 @@ public class StrokeManipulation : MonoBehaviour
 
             selectedStrokesCommonParent.localScale = selectedStrokesCommonParent.localScale + Vector3.one * scaleManipulator.GetValue * Time.deltaTime;
             selectedStrokesCommonParent.localPosition = selectedStrokesCommonParent.localPosition + positionManipulator.GetMovementDirection * positionManipulator.GetMovementScale * Time.deltaTime;
+            selectedStrokesCommonParent.rotation = rotationManipulator.RotationDifference;
         }
     }
 }

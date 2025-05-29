@@ -23,6 +23,7 @@ public class Brush : MonoBehaviour
 
     [SerializeField] private PositionManipulator _positionManipulator;
     [SerializeField] private ScaleManipulator _scaleManipulator;
+    [SerializeField] private RotationManipulator _rotationManipulator;
     private void Start()
     {
         _meshRenderer = _targetController.GetComponent<MeshRenderer>();
@@ -30,6 +31,7 @@ public class Brush : MonoBehaviour
     private void Update()
     {
         transform.position = _targetController.position;
+        transform.rotation = _targetController.rotation;
 
         if(_state == BrushState.Ready)
         {
@@ -51,6 +53,11 @@ public class Brush : MonoBehaviour
         {
             _scaleManipulator.IsHoveringHolder = true;
         }
+        else if(other.gameObject.layer == 14)
+        {
+            _rotationManipulator.initialRot = _targetController.rotation;
+            _rotationManipulator.IsHoveringHolder = true;
+        }
        
     }
 
@@ -63,6 +70,10 @@ public class Brush : MonoBehaviour
         else if(other.gameObject.layer == 13)
         {
             _scaleManipulator.IsHoveringHolder = false;
+        }
+        else if(other.gameObject.layer == 14)
+        {
+            _rotationManipulator.IsHoveringHolder = false;
         }
     }
 

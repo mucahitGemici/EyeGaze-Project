@@ -78,6 +78,7 @@ public class PositionManipulator : MonoBehaviour
             {
                 holder.position = borderPosition;
             }
+
         }
         else
         {
