@@ -3,6 +3,10 @@ using UnityEngine;
 public class Brush : MonoBehaviour
 {
     [SerializeField] private Transform _targetController;
+    public Transform GetController
+    {
+        get { return _targetController; }
+    }
     [SerializeField] private DrawController _drawController;
 
     private MeshRenderer _meshRenderer;

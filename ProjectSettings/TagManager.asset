@@ -10,7 +10,7 @@ TagManager:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Overlay UI
   - Water
   - UI
   - GazeFocus
@@ -22,7 +22,7 @@ TagManager:
   - ManipulationBorder-for-Scale
   - ManipulatorHolder-for-Scale
   - ManipulatorHolder-for-Rotation
-  - 
+  - SurfaceInteractionLayer
   - 
   - 
   - 

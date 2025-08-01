@@ -26,6 +26,7 @@ public class GazeReader : MonoBehaviour
 
     public enum InteractionState
     {
+        Registrating,
         Drawing,
         Selecting,
         Editing
@@ -36,9 +37,19 @@ public class GazeReader : MonoBehaviour
         get { return interactionState; }
     }
     [SerializeField] private TMP_Text stateText;
+
+    [SerializeField] private SurfaceInteraction surfaceInteraction;
+    private bool isLookingToSurface;
+    private SurfaceInteraction.Point potentialPoint;
+    private float counterForPoints;
+
+    [SerializeField] private Registration registration;
+    private float counterForRegistrationPoints;
+
+    //[SerializeField] private DebugText debugText;
     private void Start()
     {
-        ChangeState(InteractionState.Drawing);
+        ChangeState(InteractionState.Registrating);
     }
     private void Update()
     {
@@ -67,6 +78,14 @@ public class GazeReader : MonoBehaviour
             {
                 // this is a stroke, add this in potential stroke selection list
                 strokeManipulation.AddToPotentialStokeList(hitGameObject.transform);
+            }
+            else if(objectLayerNumber == 15 && interactionState == InteractionState.Drawing)
+            {
+                HitWall _hitWall = hitGameObject.GetComponent<HitWall>();
+                potentialPoint.position = hit.point;
+                potentialPoint.targetObject = hitGameObject;
+                potentialPoint.direction = _hitWall.Direction;
+                
             }
             
         }
@@ -108,7 +127,9 @@ public class GazeReader : MonoBehaviour
             }
         }
 
-        
+        // code for activating and deactivating the color palette. i will comment this to be able to use button B.
+        // i will use B to put points on the surface.
+        /*
         if(interactionState == InteractionState.Drawing && OVRInput.Get(OVRInput.Button.Two, OVRInput.Controller.RTouch))
         {
             colorPaletteCounter += Time.deltaTime;
@@ -127,6 +148,45 @@ public class GazeReader : MonoBehaviour
             colorPaletteActivation.Counter = colorPaletteCounter;
             colorPaletteActivation.ResetState();
         }
+        */
+
+        // for temporary it is left controller (right is charging)
+        if(interactionState == InteractionState.Registrating && OVRInput.Get(OVRInput.Button.One, OVRInput.Controller.RTouch) && counterForRegistrationPoints <= 0f)
+        {
+            /*
+            // add registration point
+            bool registrationCompleted = registration.AddPoint(drawController.GetBrush.GetController.position);
+            counterForRegistrationPoints = 0.25f;
+            if (registrationCompleted)
+            {
+                ChangeState(InteractionState.Drawing);
+            }
+            */
+
+            
+            registration.CalculateRoomPositionWithLeftController();
+            ChangeState(InteractionState.Drawing);
+            
+            
+        }
+   
+        if(counterForRegistrationPoints > 0f)
+        {
+            counterForRegistrationPoints -= Time.deltaTime;
+        }
+
+
+        // for temporary it is left controller (right is charging)
+        if (interactionState == InteractionState.Drawing && OVRInput.Get(OVRInput.Button.Two, OVRInput.Controller.RTouch) && counterForPoints <= 0f)
+        {
+            //Debug.Log($"ADD POINT");
+            surfaceInteraction.AddPoint(potentialPoint);
+            counterForPoints = 0.25f;
+        }
+        if(counterForPoints > 0f)
+        {
+            counterForPoints -= Time.deltaTime;
+        }
         
 
 
@@ -135,6 +195,7 @@ public class GazeReader : MonoBehaviour
     public void ChangeState(InteractionState newState)
     {
         interactionState = newState;
+        //debugText.EnterState(newState.ToString());
         switch (interactionState)
         {
             case InteractionState.Drawing:

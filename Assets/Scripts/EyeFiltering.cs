@@ -7,7 +7,7 @@ public class EyeFiltering : MonoBehaviour
 
     OneEuroFilter<Quaternion> quaternionFilter;
 
-    private float filterFrequency = 120f;
+    private float filterFrequency = 100f;
     private void Start()
     {
         quaternionFilter = new OneEuroFilter<Quaternion>(filterFrequency);

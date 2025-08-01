@@ -18,6 +18,10 @@ public class DrawController : MonoBehaviour
 
     public bool _drawing;
     public GameObject brush;
+    public Brush GetBrush
+    {
+        get { return brush.GetComponent<Brush>(); }
+    }
     [HideInInspector] public bool firstStrokeStarted = false;
     private Brush brushScript;
 
