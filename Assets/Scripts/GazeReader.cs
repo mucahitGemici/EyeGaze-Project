@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class GazeReader : MonoBehaviour
 {
+    [SerializeField] private Brush brush;
     [SerializeField] private Transform leftEye;
     [SerializeField] private Transform rightEye;
     [SerializeField] private LayerMask eyesHitLayers;
@@ -26,10 +27,13 @@ public class GazeReader : MonoBehaviour
 
     public enum InteractionState
     {
+        // do not use registration (no passthrough, no registration)
         Registrating,
         Drawing,
         Selecting,
-        Editing
+        Editing,
+        DrawingOnCanvas,
+        DrawingOnTargetArea
     }
     private InteractionState interactionState;
     public InteractionState GetInteractionState
@@ -43,16 +47,33 @@ public class GazeReader : MonoBehaviour
     private SurfaceInteraction.Point potentialPoint;
     private float counterForPoints;
 
+    // no registration, but keep it here in case we need it
     [SerializeField] private Registration registration;
     private float counterForRegistrationPoints;
 
     //[SerializeField] private DebugText debugText;
+
+    [SerializeField] private Transform testSphere;
     private void Start()
     {
-        ChangeState(InteractionState.Registrating);
+        ChangeState(InteractionState.Drawing);
     }
     private void Update()
     {
+        /*
+        // how to restrict brush pos
+        Vector3 targetPosBrush = brush.transform.position;
+        if(targetPosBrush.x < surfaceInteraction.GetSelectedArea.maxX &&
+            targetPosBrush.x > surfaceInteraction.GetSelectedArea.minX &&
+            targetPosBrush.y < surfaceInteraction.GetSelectedArea.maxY &&
+            targetPosBrush.y > surfaceInteraction.GetSelectedArea.minY &&
+            targetPosBrush.z < surfaceInteraction.GetSelectedArea.maxZ &&
+            targetPosBrush.z > surfaceInteraction.GetSelectedArea.minZ)
+        {
+            testSphere.transform.position = targetPosBrush;
+        }
+        */
+
         Vector3 eyePositionAverage = (leftEye.position + rightEye.position) / 2f;
         Vector3 eyesForwardDirectionAverage = ((leftEye.forward + rightEye.forward) / 2f).normalized;
 
@@ -84,8 +105,13 @@ public class GazeReader : MonoBehaviour
                 HitWall _hitWall = hitGameObject.GetComponent<HitWall>();
                 potentialPoint.position = hit.point;
                 potentialPoint.targetObject = hitGameObject;
-                potentialPoint.direction = _hitWall.Direction;
+                //potentialPoint.direction = _hitWall.Direction; no longer used
+                potentialPoint.normal = hit.normal;
                 
+            }
+            else
+            {
+                potentialPoint = new SurfaceInteraction.Point();
             }
             
         }
@@ -100,12 +126,16 @@ public class GazeReader : MonoBehaviour
             strokeApprovalCounter = 1f;
         }
 
-        // ending stroke manipulation
-        if(OVRInput.Get(OVRInput.Axis1D.SecondaryHandTrigger, OVRInput.Controller.Touch) > 0.1f && (interactionState == InteractionState.Selecting || interactionState == InteractionState.Editing))
+        // ending stroke manipulation (also check for drawing state to reset the position offset of the brush)
+        // this can be resetting button. it can reset everything (indirect, direct sketching, etc)
+        if(OVRInput.Get(OVRInput.Axis1D.SecondaryHandTrigger, OVRInput.Controller.Touch) > 0.1f && (interactionState == InteractionState.Selecting || interactionState == InteractionState.Editing || interactionState == InteractionState.Drawing))
         {
             Debug.Log("secondary hand trigger pressed");
             strokeManipulation.EndStrokeManipulation();
             //drawController.IsManipulating = false;
+            
+            brush.PositionOffset = Vector3.zero;
+            surfaceInteraction.ClearIndirectSketching();
             ChangeState(InteractionState.Drawing);
         }
 
@@ -114,6 +144,7 @@ public class GazeReader : MonoBehaviour
         {
             ChangeState(InteractionState.Selecting);
         }
+
 
         if(interactionState == InteractionState.Selecting)
         {
@@ -150,22 +181,25 @@ public class GazeReader : MonoBehaviour
         }
         */
 
-        // for temporary it is left controller (right is charging)
+        // no registation for now
+        /*
+        // // registration
         if(interactionState == InteractionState.Registrating && OVRInput.Get(OVRInput.Button.One, OVRInput.Controller.RTouch) && counterForRegistrationPoints <= 0f)
         {
-            /*
-            // add registration point
-            bool registrationCompleted = registration.AddPoint(drawController.GetBrush.GetController.position);
-            counterForRegistrationPoints = 0.25f;
-            if (registrationCompleted)
-            {
-                ChangeState(InteractionState.Drawing);
-            }
-            */
-
             
-            registration.CalculateRoomPositionWithLeftController();
-            ChangeState(InteractionState.Drawing);
+            // registration with putting points irl
+            // add registration point
+            //bool registrationCompleted = registration.AddPoint(drawController.GetBrush.GetController.position);
+            //counterForRegistrationPoints = 0.25f;
+            //if (registrationCompleted)
+            //{
+            //    ChangeState(InteractionState.Drawing);
+            //}
+            
+
+            // registration with controller
+            //registration.CalculateRoomPositionWithLeftController();
+            //ChangeState(InteractionState.Drawing);
             
             
         }
@@ -174,12 +208,14 @@ public class GazeReader : MonoBehaviour
         {
             counterForRegistrationPoints -= Time.deltaTime;
         }
+        */
 
 
         // for temporary it is left controller (right is charging)
-        if (interactionState == InteractionState.Drawing && OVRInput.Get(OVRInput.Button.Two, OVRInput.Controller.RTouch) && counterForPoints <= 0f)
+        if (interactionState == InteractionState.Drawing && OVRInput.Get(OVRInput.Button.Two, OVRInput.Controller.RTouch) && counterForPoints <= 0f && potentialPoint.normal != Vector3.zero)
         {
             //Debug.Log($"ADD POINT");
+            Debug.Log($"adding point... pos: {potentialPoint.position} and normal: {potentialPoint.normal}");
             surfaceInteraction.AddPoint(potentialPoint);
             counterForPoints = 0.25f;
         }
@@ -199,6 +235,7 @@ public class GazeReader : MonoBehaviour
         switch (interactionState)
         {
             case InteractionState.Drawing:
+                brush.isDrawingOnArea = false;
                 stateText.text = $"State: Drawing";
                 positionManipulator.gameObject.SetActive(false);
                 scaleManipulator.gameObject.SetActive(false);
@@ -221,6 +258,26 @@ public class GazeReader : MonoBehaviour
                 positionManipulator.gameObject.SetActive(true);
                 scaleManipulator.gameObject.SetActive(true);
                 rotationManipulator.gameObject.SetActive(true);
+                break;
+            case InteractionState.DrawingOnCanvas:
+                // get surface position and normal
+                Vector3 canvasPos = surfaceInteraction.GetSelectedCanvas.transform.position;
+                //GameObject test = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                //test.transform.position = canvasPos;
+                //test.transform.localScale = Vector3.one * 0.25f;
+
+                // put an offset to the brush
+                brush.isDrawingOnArea = false;
+                brush.PositionOffset = (canvasPos - brush.transform.position) + surfaceInteraction.GetSelectedCanvas.normal * 0.25f;
+                
+                ChangeState(InteractionState.Drawing);
+                break;
+            case InteractionState.DrawingOnTargetArea:
+                Vector3 canvasPosition = surfaceInteraction.GetSelectedCanvas.transform.position;
+                //brush.PositionOffset = (canvasPosition - brush.transform.position) + surfaceInteraction.GetSelectedCanvas.normal * 0.25f;
+                //brush.SetMovementArea = surfaceInteraction.GetSelectedArea;
+                brush.isDrawingOnArea = true;
+                ChangeState(InteractionState.Drawing);
                 break;
         }
     }

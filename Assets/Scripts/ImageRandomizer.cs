@@ -11,11 +11,11 @@ public class ImageRandomizer : MonoBehaviour
         int num = Random.Range(0, 2);
         if(num == 0)
         {
-            image.sprite = cat;
+            //image.sprite = cat;
         }
         else
         {
-            image.sprite = dog;
+            //image.sprite = dog;
         }
     }
 }

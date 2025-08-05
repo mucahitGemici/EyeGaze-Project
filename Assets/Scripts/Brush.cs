@@ -2,6 +2,23 @@ using UnityEngine;
 
 public class Brush : MonoBehaviour
 {
+    
+    public bool isDrawingOnArea;
+
+    [SerializeField] private ExperimentManager experimentManager;
+    [SerializeField] private Transform brushVisual;
+
+    public Transform WIMTransform;
+    public Transform TargetAreaTransform;
+
+    private Vector3 positionOffset;
+    public Vector3 PositionOffset
+    {
+        get { return positionOffset; }
+        set { positionOffset = value; }
+    }
+
+
     [SerializeField] private Transform _targetController;
     public Transform GetController
     {
@@ -31,10 +48,25 @@ public class Brush : MonoBehaviour
     private void Start()
     {
         _meshRenderer = _targetController.GetComponent<MeshRenderer>();
+        switch (experimentManager.GetExperimentCondition)
+        {
+            case ExperimentManager.Condition.DirectSketching:
+                break;
+            case ExperimentManager.Condition.IndirectSketching:
+                //
+                //brushVisual.gameObject.SetActive(false);
+                break;
+        }
     }
     private void Update()
     {
-        transform.position = _targetController.position;
+
+        if(isDrawingOnArea == false)
+        {
+            transform.position = _targetController.position + positionOffset;
+        }
+            
+
         transform.rotation = _targetController.rotation;
 
         if(_state == BrushState.Ready)
