@@ -22,6 +22,10 @@ public class DrawController : MonoBehaviour
     {
         get { return brush.GetComponent<Brush>(); }
     }
+
+    [HideInInspector]
+    public Transform targetTransformForLineRendererDrawing;
+
     [HideInInspector] public bool firstStrokeStarted = false;
     private Brush brushScript;
 
@@ -35,6 +39,14 @@ public class DrawController : MonoBehaviour
 
     [SerializeField] private GazeReader _gazeReader;
 
+    private bool isLineRendererDrawing;
+    private int lrIndex;
+    [SerializeField] private Transform controllerTransform;
+    private LineRenderer lineRenderer;
+
+    [SerializeField] private Transform wimLrDrawingsParent;
+    private List<GameObject> lineDrawings = new List<GameObject>();
+
 
     public void Start()
     {
@@ -46,6 +58,9 @@ public class DrawController : MonoBehaviour
         brushScript = brush.GetComponent<Brush>();
 
         GlobalVars.Instance.thisExperiment = GlobalVars.ExperimentPhase.drawing;
+
+
+        
     }
 
    
@@ -76,9 +91,45 @@ public class DrawController : MonoBehaviour
             GlobalVars.Instance.thisExperiment = GlobalVars.ExperimentPhase.finish;
             EventManager.Instance.TriggerEvent(new NewCanvasEvent());
         }
+
+        if (isLineRendererDrawing && lineRenderer != null && targetTransformForLineRendererDrawing != null)
+        {
+            lineRenderer.positionCount = lrIndex + 1;
+            lineRenderer.SetPosition(lrIndex, targetTransformForLineRendererDrawing.position);
+            lrIndex++;
+        }
+
     }
 
+    public void InitializeLineRendererDrawing()
+    {
+        // line renderer
+        GameObject lrObj = new GameObject("lineRenderer");
+        lrObj.transform.parent = wimLrDrawingsParent;
+        lineDrawings.Add(lrObj);
+        lineRenderer = lrObj.AddComponent<LineRenderer>();
+        lineRenderer.transform.parent = wimLrDrawingsParent;
+        lineRenderer.positionCount = 0;
+        lineRenderer.startWidth = 0.01f;
+        lineRenderer.endWidth = 0.01f;
+        Material lrMaterial = new Material(Shader.Find("Sprites/Default"));
+        lineRenderer.material = lrMaterial;
+        lrMaterial.color = Color.black;
+    }
 
+    public void ResetLineRendererDrawing()
+    {
+        lineRenderer = null;
+        lrIndex = 0;
+    }
+
+    public void ClearLineRendererDrawings()
+    {
+        foreach (GameObject child in lineDrawings)
+        {
+            Destroy(child);
+        }
+    }
 
     public void OnTriggerClick(bool value)
     {
@@ -92,6 +143,8 @@ public class DrawController : MonoBehaviour
                 brushScript.SetBrushState = Brush.BrushState.Using;
                 if(firstStrokeStarted == false) firstStrokeStarted = true;
                 EventManager.Instance.QueueEvent(new StartDrawingEvent(brush.transform));
+            InitializeLineRendererDrawing();
+            isLineRendererDrawing = true;
            // }
         }
 
@@ -103,6 +156,8 @@ public class DrawController : MonoBehaviour
                 _drawing = false;
                 brushScript.SetBrushState = Brush.BrushState.Ready;
                 EventManager.Instance.QueueEvent(new EndDrawingEvent(brush.transform));
+            isLineRendererDrawing = false;
+            ResetLineRendererDrawing();
             //}
         }
 

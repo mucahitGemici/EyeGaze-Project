@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 public class SurfaceInteraction : MonoBehaviour
 {
+    [SerializeField] private DrawController drawController;
     [SerializeField] private Brush brush;
     [SerializeField] private ExperimentManager experimentManager;
     [SerializeField] private GazeReader gazeReader;
@@ -28,7 +29,11 @@ public class SurfaceInteraction : MonoBehaviour
     [SerializeField] private Canvas exampleImage;
     [SerializeField] private GameObject pointPrefab;
 
-    private GameObject pointHolder;
+    private GameObject pointHolder1;
+    private GameObject pointHolder2;
+    private Point potentialPoint1;
+    private Point potentialPoint2;
+    
 
     public struct SelectedCanvas
     {
@@ -60,6 +65,9 @@ public class SurfaceInteraction : MonoBehaviour
     private GameObject wimObj;
     private GeneratedArea targetArea;
     private GeneratedArea wim;
+    private Canvas localCanvas;
+
+    [SerializeField] private LineRenderer possibleAreaLR1;
     
     public void AddPoint(Point pt)
     {
@@ -94,12 +102,14 @@ public class SurfaceInteraction : MonoBehaviour
         if (points[0].targetObject == null)
         {
             points[0] = pt;
-            pointHolder = Instantiate(pointPrefab, pt.position, Quaternion.identity);
+            pointHolder1 = Instantiate(pointPrefab, pt.position, Quaternion.identity);
+            potentialPoint1 = pt;
         }
         else if(points[1].targetObject == null && points[0].normal == pt.normal)
         {
             points[1] = pt;
-            Instantiate(pointPrefab, pt.position, Quaternion.identity);
+            pointHolder2 = Instantiate(pointPrefab, pt.position, Quaternion.identity);
+            potentialPoint2 = pt;
             // then put the box
             //CreateBox2D();
             CreateBox2D_New();
@@ -107,8 +117,8 @@ public class SurfaceInteraction : MonoBehaviour
         }
         else
         {
-            Destroy(pointHolder);
-            pointHolder = null;
+            Destroy(pointHolder1);
+            pointHolder1 = null;
             points = new Point[2];
         }
         
@@ -116,9 +126,15 @@ public class SurfaceInteraction : MonoBehaviour
 
     }
 
+
     private void CreateBox2D_New()
     {
-        Canvas localCanvas = Instantiate(exampleImage);
+        Destroy(pointHolder1);
+        Destroy(pointHolder2);
+        pointHolder1 = null;
+        pointHolder2 = null;
+
+        localCanvas = Instantiate(exampleImage);
         localCanvas.renderMode = RenderMode.WorldSpace;
 
         RectTransform localRectTransform = localCanvas.GetComponent<RectTransform>();
@@ -406,6 +422,7 @@ public class SurfaceInteraction : MonoBehaviour
                 targetArea.DesiredPos = targetArea.transform.position;
                 wim = wimObj.AddComponent<GeneratedArea>();
                 wim.DesiredPos = wim.transform.position;
+                wim.transform.localScale = Vector3.one * 0.4f;
 
                 // setting parameters
                 targetArea.Brush = brush.transform;
@@ -418,6 +435,7 @@ public class SurfaceInteraction : MonoBehaviour
                 // spawning control objects
                 targetArea.GenerateControl();
                 wim.GenerateControl();
+                drawController.targetTransformForLineRendererDrawing = wim.GetControl.transform;
 
 
                 gazeReader.ChangeState(GazeReader.InteractionState.DrawingOnTargetArea);
@@ -428,8 +446,10 @@ public class SurfaceInteraction : MonoBehaviour
 
     public void ClearIndirectSketching()
     {
+        if(localCanvas != null) Destroy(localCanvas.gameObject);
         Destroy(targetAreaObj);
         Destroy(wimObj);
+        localCanvas = null;
         targetAreaObj = null;
         wimObj = null;
     }

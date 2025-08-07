@@ -5,6 +5,7 @@ using UnityEngine.SocialPlatforms;
 
 public class GeneratedArea : MonoBehaviour
 {
+   
     private Transform targetController;
     public Transform TargetController
     {
@@ -62,17 +63,27 @@ public class GeneratedArea : MonoBehaviour
             desiredPos = value;
         }
     }
+
+    private LineRenderer lineRenderer;
     private void Start()
     {
         points = GetComponentsInChildren<Transform>().ToList();
         points.RemoveAt(0);
 
-        
+        lineRenderer = gameObject.AddComponent<LineRenderer>();
 
+        lineRenderer.positionCount = 16;
+        lineRenderer.startWidth = 0.025f;
+        lineRenderer.endWidth = 0.025f;
+        Material lrMaterial = new Material(Shader.Find("Sprites/Default"));
+        lineRenderer.material = lrMaterial;
+        lrMaterial.color = Color.yellow * new Color(1, 1, 1, 0.5f);
+        DrawArea();
 
         foreach(Transform point in points)
         {
             Vector3 corner = point.localPosition;
+           
             if (corner.x <= minX)
             {
                 minX = corner.x;
@@ -101,6 +112,25 @@ public class GeneratedArea : MonoBehaviour
 
     }
 
+    private void DrawArea()
+    {
+        lineRenderer.SetPosition(0, points[0].position);
+        lineRenderer.SetPosition(1, points[1].position);
+        lineRenderer.SetPosition(2, points[2].position);
+        lineRenderer.SetPosition(3, points[3].position);
+        lineRenderer.SetPosition(4, points[0].position);
+        lineRenderer.SetPosition(5, points[4].position);
+        lineRenderer.SetPosition(6, points[5].position);
+        lineRenderer.SetPosition(7, points[6].position);
+        lineRenderer.SetPosition(8, points[7].position);
+        lineRenderer.SetPosition(9, points[4].position);
+        lineRenderer.SetPosition(10, points[5].position);
+        lineRenderer.SetPosition(11, points[1].position);
+        lineRenderer.SetPosition(12, points[2].position);
+        lineRenderer.SetPosition(13, points[6].position);
+        lineRenderer.SetPosition(14, points[7].position);
+        lineRenderer.SetPosition(15, points[3].position);
+    }
     private void Update()
     {
         if (control == null) return;
@@ -196,7 +226,11 @@ public class GeneratedArea : MonoBehaviour
 
         if (controlledByUser)
         {
-            //mr.enabled = false;
+            mr.enabled = true;
+        }
+        else
+        {
+            mr.enabled = false;
         }
     }
 }

@@ -45,6 +45,10 @@ public class GazeReader : MonoBehaviour
     [SerializeField] private SurfaceInteraction surfaceInteraction;
     private bool isLookingToSurface;
     private SurfaceInteraction.Point potentialPoint;
+    public SurfaceInteraction.Point PotentialPoint
+    {
+        get { return potentialPoint; }
+    }
     private float counterForPoints;
 
     // no registration, but keep it here in case we need it
@@ -136,6 +140,7 @@ public class GazeReader : MonoBehaviour
             
             brush.PositionOffset = Vector3.zero;
             surfaceInteraction.ClearIndirectSketching();
+            drawController.ClearLineRendererDrawings();
             ChangeState(InteractionState.Drawing);
         }
 

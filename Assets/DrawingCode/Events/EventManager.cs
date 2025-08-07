@@ -40,6 +40,7 @@ public class EventManager : MonoBehaviour
         }
     }
 
+
     private EventDelegate AddDelegate<T>(EventDelegate<T> del) where T : AppEvent
     {
         // Early-out if we've already registered this delegate
