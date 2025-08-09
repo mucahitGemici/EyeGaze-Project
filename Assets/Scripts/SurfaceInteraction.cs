@@ -68,6 +68,7 @@ public class SurfaceInteraction : MonoBehaviour
     private GeneratedArea targetArea;
     private GeneratedArea wim;
     private Canvas localCanvas;
+    private Image localImage;
 
     [SerializeField] private LineRenderer possibleAreaLR1;
     
@@ -144,7 +145,7 @@ public class SurfaceInteraction : MonoBehaviour
         localRectTransform.sizeDelta = new Vector2(1, 1);
         localRectTransform.anchoredPosition3D = points[0].position;
 
-        Image localImage = localCanvas.GetComponentInChildren<Image>();
+        localImage = localCanvas.GetComponentInChildren<Image>();
 
         float width = 0;
         float height = 0;
@@ -343,6 +344,8 @@ public class SurfaceInteraction : MonoBehaviour
         switch (experimentManager.GetExperimentCondition)
         {
             case ExperimentManager.Condition.DirectSketching:
+                localCanvas.GetComponent<RectTransform>().sizeDelta = new Vector2(100, 100);
+                //localCanvas.transform.localScale = Vector3.one * 100f; // big enough to cover whole area
                 gazeReader.ChangeState(GazeReader.InteractionState.DrawingOnCanvas);
                 break;
             case ExperimentManager.Condition.IndirectSketching:
