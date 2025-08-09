@@ -139,6 +139,7 @@ public class GazeReader : MonoBehaviour
             //drawController.IsManipulating = false;
             
             brush.PositionOffset = Vector3.zero;
+            brush.SetDirectSketchingVariables = new Brush.DirectSketchingVariables();
             surfaceInteraction.ClearIndirectSketching();
             drawController.ClearLineRendererDrawings();
             ChangeState(InteractionState.Drawing);
@@ -240,6 +241,7 @@ public class GazeReader : MonoBehaviour
         switch (interactionState)
         {
             case InteractionState.Drawing:
+             
                 brush.isDrawingOnArea = false;
                 stateText.text = $"State: Drawing";
                 positionManipulator.gameObject.SetActive(false);
@@ -271,9 +273,15 @@ public class GazeReader : MonoBehaviour
                 //test.transform.position = canvasPos;
                 //test.transform.localScale = Vector3.one * 0.25f;
 
-                // put an offset to the brush
+                // set it for direct sketching
+                brush.PositionOffset = (canvasPos - brush.transform.position) + surfaceInteraction.GetSelectedCanvas.normal * 0.15f;
+                Brush.DirectSketchingVariables directSketchingVars = new Brush.DirectSketchingVariables();
+                directSketchingVars.normalVector = surfaceInteraction.GetSelectedCanvas.normal;
+                directSketchingVars.originPoint = surfaceInteraction.GetSelectedCanvas.transform.position;
+                directSketchingVars.width = surfaceInteraction.GetSelectedCanvas.width;
+                directSketchingVars.height = surfaceInteraction.GetSelectedCanvas.height;
+                brush.SetDirectSketchingVariables = directSketchingVars;
                 brush.isDrawingOnArea = false;
-                brush.PositionOffset = (canvasPos - brush.transform.position) + surfaceInteraction.GetSelectedCanvas.normal * 0.25f;
                 
                 ChangeState(InteractionState.Drawing);
                 break;

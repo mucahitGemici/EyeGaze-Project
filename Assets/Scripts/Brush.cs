@@ -5,11 +5,25 @@ public class Brush : MonoBehaviour
     
     public bool isDrawingOnArea;
 
+    
+    public struct DirectSketchingVariables
+    {
+        public Vector3 normalVector;
+        public Vector3 originPoint;
+        public float width;
+        public float height;
+    }
+    private DirectSketchingVariables directSketchingVariables;
+    public DirectSketchingVariables SetDirectSketchingVariables
+    {
+        set { directSketchingVariables = value; }
+    }
+
     [SerializeField] private ExperimentManager experimentManager;
     [SerializeField] private Transform brushVisual;
 
-    public Transform WIMTransform;
-    public Transform TargetAreaTransform;
+    //public Transform WIMTransform;
+    //public Transform TargetAreaTransform;
 
     private Vector3 positionOffset;
     public Vector3 PositionOffset
@@ -63,7 +77,10 @@ public class Brush : MonoBehaviour
 
         if(isDrawingOnArea == false)
         {
-            transform.position = _targetController.position + positionOffset;
+            Vector3 newPos = _targetController.position + positionOffset;
+            Vector3 reflectedOnPlane = LimitMovementForDirectSketching(newPos);
+            transform.position = reflectedOnPlane;
+            //transform.position = _targetController.position + positionOffset;
         }
             
 
@@ -79,6 +96,20 @@ public class Brush : MonoBehaviour
         }
 
     }
+
+    private Vector3 LimitMovementForDirectSketching(Vector3 pos)
+    {
+        float dist = Vector3.Dot(pos - directSketchingVariables.originPoint, directSketchingVariables.normalVector);
+        if(dist > 0f)
+        {
+            return pos;
+        }
+        else
+        {
+            return pos - dist * directSketchingVariables.normalVector;
+        }
+    }
+
     private void OnTriggerEnter(Collider other)
     {
         if(other.gameObject.layer == 10)

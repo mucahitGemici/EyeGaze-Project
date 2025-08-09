@@ -3028,7 +3028,7 @@ GameObject:
   - component: {fileID: 284584277}
   - component: {fileID: 284584276}
   - component: {fileID: 284584279}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: Ground
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3790,8 +3790,6 @@ MonoBehaviour:
   isDrawingOnArea: 0
   experimentManager: {fileID: 157318715}
   brushVisual: {fileID: 1085468979}
-  WIMTransform: {fileID: 0}
-  TargetAreaTransform: {fileID: 0}
   _targetController: {fileID: 1519511166}
   _drawController: {fileID: 1900379720}
   _readyMaterial: {fileID: 2100000, guid: dafcb27b44108394a82ce9bb97167c51, type: 2}
@@ -4782,7 +4780,7 @@ GameObject:
   - component: {fileID: 451278839}
   - component: {fileID: 451278838}
   - component: {fileID: 451278837}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: Wall (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -11046,7 +11044,7 @@ GameObject:
   - component: {fileID: 885909678}
   - component: {fileID: 885909677}
   - component: {fileID: 885909676}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: Wall (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -16091,7 +16089,7 @@ GameObject:
   - component: {fileID: 1269121079}
   - component: {fileID: 1269121078}
   - component: {fileID: 1269121081}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: Ceiling
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -21331,7 +21329,7 @@ GameObject:
   - component: {fileID: 1701142973}
   - component: {fileID: 1701142972}
   - component: {fileID: 1701142971}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: Wall (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -25843,7 +25841,7 @@ GameObject:
   - component: {fileID: 2118810213}
   - component: {fileID: 2118810212}
   - component: {fileID: 2118810211}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: Wall
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -39,6 +39,8 @@ public class SurfaceInteraction : MonoBehaviour
     {
         public Transform transform;
         public Vector3 normal;
+        public float width;
+        public float height;
     }
     private SelectedCanvas selectedCanvas;
     public SelectedCanvas GetSelectedCanvas
@@ -126,7 +128,7 @@ public class SurfaceInteraction : MonoBehaviour
 
     }
 
-
+   
     private void CreateBox2D_New()
     {
         Destroy(pointHolder1);
@@ -333,7 +335,8 @@ public class SurfaceInteraction : MonoBehaviour
         selectedCanvas = new SelectedCanvas();
         selectedCanvas.normal = points[0].normal;
         selectedCanvas.transform = localCanvas.transform;
-        
+        selectedCanvas.width = width;
+        selectedCanvas.height = height;
 
         
 
