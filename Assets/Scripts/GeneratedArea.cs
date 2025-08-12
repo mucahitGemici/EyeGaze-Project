@@ -6,6 +6,11 @@ using UnityEngine.SocialPlatforms;
 public class GeneratedArea : MonoBehaviour
 {
    
+    private ExperimentManager experimentManager;
+    public ExperimentManager ExperimentManagerSet
+    {
+        set { experimentManager = value; }
+    }
     private Transform targetController;
     public Transform TargetController
     {
@@ -73,8 +78,8 @@ public class GeneratedArea : MonoBehaviour
         lineRenderer = gameObject.AddComponent<LineRenderer>();
 
         lineRenderer.positionCount = 16;
-        lineRenderer.startWidth = 0.025f;
-        lineRenderer.endWidth = 0.025f;
+        lineRenderer.startWidth = 0.015f;
+        lineRenderer.endWidth = 0.015f;
         Material lrMaterial = new Material(Shader.Find("Sprites/Default"));
         lineRenderer.material = lrMaterial;
         lrMaterial.color = Color.yellow * new Color(1, 1, 1, 0.5f);
@@ -111,6 +116,8 @@ public class GeneratedArea : MonoBehaviour
         }
 
     }
+
+
 
     private void DrawArea()
     {
@@ -233,4 +240,5 @@ public class GeneratedArea : MonoBehaviour
             mr.enabled = false;
         }
     }
+
 }

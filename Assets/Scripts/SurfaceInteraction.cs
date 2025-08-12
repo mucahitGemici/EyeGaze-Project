@@ -345,10 +345,12 @@ public class SurfaceInteraction : MonoBehaviour
         {
             case ExperimentManager.Condition.DirectSketching:
                 localCanvas.GetComponent<RectTransform>().sizeDelta = new Vector2(100, 100);
+                brush.directSketchingStarted = true;
                 //localCanvas.transform.localScale = Vector3.one * 100f; // big enough to cover whole area
                 gazeReader.ChangeState(GazeReader.InteractionState.DrawingOnCanvas);
                 break;
             case ExperimentManager.Condition.IndirectSketching:
+                localImage.enabled = false;
                 Vector3[] bottomCorners = new Vector3[4];
                 localRectTransform.GetWorldCorners(bottomCorners);
                 Vector3[] topCorners = new Vector3[4];
@@ -405,6 +407,7 @@ public class SurfaceInteraction : MonoBehaviour
                     GameObject t = GameObject.CreatePrimitive(PrimitiveType.Sphere);
                     t.transform.localScale = Vector3.one * 0.05f;
                     t.transform.position = corner;
+                    t.GetComponent<MeshRenderer>().enabled = false;
                     posSum += t.transform.position;
                     cornerSphereList.Add(t);
                 }
@@ -425,8 +428,10 @@ public class SurfaceInteraction : MonoBehaviour
                 }
                 
                 targetArea = targetAreaObj.AddComponent<GeneratedArea>();
+                targetArea.ExperimentManagerSet = experimentManager;
                 targetArea.DesiredPos = targetArea.transform.position;
                 wim = wimObj.AddComponent<GeneratedArea>();
+                wim.ExperimentManagerSet = experimentManager;
                 wim.DesiredPos = wim.transform.position;
                 wim.transform.localScale = Vector3.one * 0.4f;
 

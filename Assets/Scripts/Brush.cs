@@ -1,10 +1,13 @@
+using TMPro;
 using UnityEngine;
 
 public class Brush : MonoBehaviour
 {
-    
+    [SerializeField] private TMP_Text testText;
+
     public bool isDrawingOnArea;
 
+    public bool directSketchingStarted;
     
     public struct DirectSketchingVariables
     {
@@ -13,10 +16,15 @@ public class Brush : MonoBehaviour
         public float width;
         public float height;
     }
+    float s = 1f;
     private DirectSketchingVariables directSketchingVariables;
     public DirectSketchingVariables SetDirectSketchingVariables
     {
-        set { directSketchingVariables = value; }
+        set 
+        { 
+            directSketchingVariables = value;
+            
+        }
     }
 
     [SerializeField] private ExperimentManager experimentManager;
@@ -72,17 +80,38 @@ public class Brush : MonoBehaviour
                 break;
         }
     }
+
+    public float CalculateS()
+    {
+        s = Vector3.Distance(_targetController.position, directSketchingVariables.originPoint);
+        return s;
+    }
     private void Update()
     {
 
-        if(isDrawingOnArea == false)
+        if(experimentManager.GetExperimentCondition == ExperimentManager.Condition.DirectSketching)
         {
-            Vector3 newPos = _targetController.position + positionOffset;
-            Vector3 reflectedOnPlane = LimitMovementForDirectSketching(newPos);
-            transform.position = reflectedOnPlane;
-            //transform.position = _targetController.position + positionOffset;
+            if (directSketchingStarted)
+            {
+                Debug.Log($"s: {s}");
+                Vector3 realNewPos = _targetController.position * s + positionOffset;
+
+
+                Vector3 reflectedOnPlane = LimitMovementForDirectSketching(realNewPos);
+
+                transform.position = reflectedOnPlane;
+            }
+            else
+            {
+                transform.position = _targetController.position;
+            }          
         }
-            
+        else
+        {
+            transform.position = _targetController.position;
+        }
+
+
 
         transform.rotation = _targetController.rotation;
 
